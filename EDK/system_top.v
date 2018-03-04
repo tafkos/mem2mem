@@ -72,6 +72,7 @@ wire [31:0] conf_reg_I_w;
 
   // Instantiate the module
 (* BOX_TYPE = "user_black_box" *)
+
 system instance_name (
     .fpga_0_LEDs_8Bit_GPIO_IO_O_pin(fpga_0_LEDs_8Bit_GPIO_IO_O_pin), 
     .fpga_0_DIP_Switches_4Bit_GPIO_IO_I_pin(fpga_0_DIP_Switches_4Bit_GPIO_IO_I_pin), 
@@ -96,7 +97,7 @@ system instance_name (
     //.BRAM1_RX_Rst_B_pin  (BRAM1_RX_Rst_B_pin), 
     .BRAM1_RX_Rst_B_pin  (fpga_0_rst_1_sys_rst_pin), 
     //.BRAM1_RX_Clk_B_pin  (BRAM1_RX_Clk_B_pin), 
-    .BRAM1_RX_Clk_B_pin  (BRAM1_RX_Clk_B_pin), 
+    .BRAM1_RX_Clk_B_pin  (fpga_0_clk_1_sys_clk_pin), 
     .BRAM1_RX_EN_B_pin   (BRAM1_RX_EN_B_pin), 
     .BRAM1_RX_WEN_B_pin  (BRAM1_RX_WEN_B_pin), 
     .BRAM1_RX_Addr_B_pin (BRAM1_RX_Addr_B_pin), 
@@ -118,7 +119,33 @@ system instance_name (
     );
 
 
-// control logic to pass data from BRAM1 to BRAM0
+// control logic to pass data from BRAM0 to BRAM1
+wire clk = fpga_0_clk_1_sys_clk_pin,
+     rst = fpga_0_rst_1_sys_rst_pin;
+	  
+reg [31:0] addr_cnt;
+
+assign conf_reg_I_w = addr_cnt;
+
+
+// this counter reset to 0 after rst and 
+always @(posedge clk)
+	if (rst)
+		addr_cnt <= 0;
+	else if (conf_reg_O_w[0] && addr_cnt != 1000)
+		addr_cnt <= addr_cnt + 1;
+	else if (~conf_reg_O_w[0])
+		addr_cnt <= 0; 
+
+assign BRAM0_TX_Addr_B_pin = addr_cnt,
+       BRAM1_RX_Addr_B_pin = addr_cnt,
+
+       BRAM1_RX_WEN_B_pin = 4'b1111,             // enable write in RX BRAM
+       BRAM0_TX_WEN_B_pin = 4'b0,                // disable write in TX BRAM
+       BRAM1_RX_Dout_B_pin = BRAM0_TX_Din_B_pin, // connect TX BRAM dout to RX BRAM din
+
+       BRAM0_TX_EN_B_pin = 1'b1,
+       BRAM1_RX_EN_B_pin = 1'b1;
 
 endmodule
 
