@@ -49,16 +49,16 @@ module system_top
   input             fpga_0_clk_1_sys_clk_pin;
   input             fpga_0_rst_1_sys_rst_pin;
   
-  wire              BRAM1_RX_Rst_B_pin;
-  wire              BRAM1_RX_Clk_B_pin;
+  //wire              BRAM1_RX_Rst_B_pin;
+  //wire              BRAM1_RX_Clk_B_pin;
   wire              BRAM1_RX_EN_B_pin;
   wire   [3:0]      BRAM1_RX_WEN_B_pin;
   wire   [31:0]     BRAM1_RX_Addr_B_pin;
   wire   [31:0]     BRAM1_RX_Din_B_pin;
   wire   [31:0]     BRAM1_RX_Dout_B_pin;
   
-  wire              BRAM0_TX_Rst_B_pin;
-  wire              BRAM0_TX_Clk_B_pin;
+  //wire              BRAM0_TX_Rst_B_pin;
+  //wire              BRAM0_TX_Clk_B_pin;
   wire              BRAM0_TX_EN_B_pin;
   wire   [3:0]      BRAM0_TX_WEN_B_pin;
   wire   [31:0]     BRAM0_TX_Addr_B_pin;
